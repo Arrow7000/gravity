@@ -27,6 +27,9 @@ export class Vector {
   }
 
   public divide(div: number) {
+    if (div === 0) {
+      throw new Error("Division by zero is not allowed");
+    }
     const { x, y } = this;
     return new Vector(x / div, y / div);
   }

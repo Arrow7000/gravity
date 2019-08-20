@@ -1,13 +1,12 @@
 import { Vector, Rectangle, getRectanglePosition, Pos } from "./Vector";
 import { Node } from "./Node";
 import { Ctx, drawCircle } from "./drawing";
-import { allCombinations, MouseState } from "./helpers";
+import { allCombinations, MouseState, notNull } from "./helpers";
 import { getAttraction } from "./gravityForce";
 
 const canvas = document.getElementById("canvas") as HTMLCanvasElement;
 const ctx = canvas.getContext("2d") as Ctx;
 
-let nodes: Node[] = [];
 const getCanvasEnd = () => new Vector(ctx.canvas.width, ctx.canvas.height);
 
 const mouseState: MouseState = {
@@ -32,22 +31,27 @@ const range = <T>(length: number, mapper: (i: number) => T) =>
   Array.from({ length }).map((_, i) => mapper(i));
 
 const rand = (max: number) => Math.random() * max;
-const makeRandomVector = () =>
-  new Vector(rand(getCanvasEnd().x), rand(getCanvasEnd().y));
 
-nodes = range(30, () => new Node(makeRandomVector()));
+const randBetween = (min: number, max: number) =>
+  Math.random() * (max - min) + min;
+
+const makeRandomVector = () => {
+  const canvEnd = getCanvasEnd();
+  const horCenter = canvEnd.x / 2;
+  const vertCenter = canvEnd.y / 2;
+  const topLeft = new Vector(horCenter / 4, vertCenter / 4);
+  const bottomRight = topLeft.multiply(7);
+  return new Vector(
+    randBetween(topLeft.x, bottomRight.x),
+    randBetween(topLeft.y, bottomRight.y)
+  );
+};
+
+function isOutOfView(v: Vector) {}
+
+let nodes = range(100, () => new Node(makeRandomVector()));
 
 window.onresize = sizeCanvasToWindow;
-
-function addNewNode(location: Vector) {
-  if (nodes.filter(n => n.position.isEqual(location)).length < 1) {
-    const wiggle = 20;
-    const wiggleRoom = () => Math.random() * wiggle - wiggle / 2;
-    const newLoc = location.add(new Vector(wiggleRoom(), wiggleRoom()));
-
-    nodes.push(new Node(newLoc));
-  }
-}
 
 canvas.addEventListener("mousedown", e => {
   mouseState.location = new Vector(e.clientX, e.clientY);
@@ -77,24 +81,6 @@ canvas.addEventListener("mouseup", e => {
   mouseState.newNode = null;
 });
 
-function combineNodes(a: Node, b: Node) {
-  const areTouching =
-    a.position.to(b.position).length < (a.radius + b.radius) / 2;
-
-  if (areTouching) {
-    const totalMass = a.mass + b.mass;
-    const centerOfMass = a.position
-      .multiply(a.mass)
-      .add(b.position.multiply(b.mass))
-      .divide(totalMass);
-
-    const newNode = new Node(centerOfMass, totalMass);
-    newNode.acceleration = a.acceleration.add(b.acceleration);
-
-    nodes = nodes.filter(node => node !== a && node !== b).concat(newNode);
-  }
-}
-
 function onFrame(counter: number) {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -103,9 +89,44 @@ function onFrame(counter: number) {
 
     a.accelerate(forces.a);
     b.accelerate(forces.b);
-
-    combineNodes(a, b);
   });
+
+  const combinedNodes = nodes.reduce((combinedNodes: Node[], node: Node) => {
+    const closeNodes = combinedNodes.filter(
+      (thisNode: Node) =>
+        node.position.to(thisNode.position).length <
+        (node.radius + thisNode.radius) / 2
+    );
+
+    if (closeNodes.length < 1) {
+      return [...combinedNodes, node];
+    } else {
+      const combinedNode = [...closeNodes, node].reduce(
+        (combinedNode, closeNode) => {
+          const totalMass = combinedNode.mass + closeNode.mass;
+          const centerOfMass = combinedNode.position
+            .multiply(combinedNode.mass)
+            .add(closeNode.position.multiply(closeNode.mass))
+            .divide(totalMass);
+
+          const newNode = new Node(centerOfMass, totalMass);
+          newNode.acceleration = combinedNode.acceleration.add(
+            closeNode.acceleration
+          );
+
+          return newNode;
+        }
+      );
+
+      const withoutCombined = combinedNodes.filter(
+        thisNode => !closeNodes.includes(thisNode)
+      );
+
+      return [...withoutCombined, combinedNode];
+    }
+  }, []);
+
+  nodes = combinedNodes;
 
   nodes.forEach(node => {
     drawCircle(ctx, node);
