@@ -1,6 +1,11 @@
 import { Vector, Rectangle, getRectanglePosition, Pos } from "./Vector";
 import { Node } from "./Node";
-import { Ctx, drawCircle } from "./drawing";
+import {
+  Ctx,
+  drawCircle,
+  drawLineFromCenterToNode,
+  drawMomentumArrow
+} from "./drawing";
 import { allCombinations, MouseState, notNull } from "./helpers";
 import { getAttraction } from "./gravityForce";
 
@@ -58,7 +63,11 @@ canvas.addEventListener("mousedown", e => {
   mouseState.isDown = true;
 
   mouseState.determiningMass = true;
-  mouseState.newNode = new Node(mouseState.location, 1, Vector.origin);
+  mouseState.newNode = new Node(
+    mouseState.location,
+    2,
+    Vector.origin.add(new Vector(0.01, 0.01))
+  );
 });
 
 canvas.addEventListener("mousemove", e => {
@@ -126,16 +135,20 @@ function onFrame(counter: number) {
     }
   }, []);
 
+  const { newNode } = mouseState;
+  if (newNode) {
+    drawMomentumArrow(ctx, newNode);
+    drawCircle(ctx, newNode);
+  }
+
   nodes = combinedNodes;
 
   nodes.forEach(node => {
     drawCircle(ctx, node);
+    // drawLineFromCenterToNode(ctx, node);
 
     node.momentumMove();
   });
-
-  const { newNode } = mouseState;
-  if (newNode) drawCircle(ctx, newNode);
 
   if (mouseState.isDown && newNode) {
     if (mouseState.determiningMass) {
