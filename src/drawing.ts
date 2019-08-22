@@ -38,22 +38,37 @@ export function drawLineFromCenterToNode(ctx: Ctx, node: Node) {
   ctx.stroke();
 }
 
-export function drawMomentumArrow(ctx: Ctx, node: Node) {
+export function drawMomentumArrow(ctx: Ctx, node: Node, mouseLocation: Vector) {
   const { x, y } = node.position;
   // const center = getCanvasCenter(ctx);
   ctx.beginPath();
   ctx.moveTo(x, y);
 
-  const momentum = node.position.add(
-    node.acceleration
-      .multiply(15)
-      .divide(node.mass)
-      .add(node.acceleration.unit.multiply(node.radius))
-  );
+  const momentumVec = node.acceleration.unit
+    .multiply(mouseLocation.subtract(node.position).length)
+    .add(node.acceleration.unit.multiply(node.radius));
+
+  const momentum = node.position.add(momentumVec);
+
+  const momentumTip = node.position.add(momentumVec.addLen(20));
+
+  const thickness = Math.log(node.mass);
 
   ctx.lineTo(momentum.x, momentum.y);
   ctx.strokeStyle = "purple";
-  ctx.lineWidth = Math.log(node.mass);
+  ctx.lineWidth = thickness;
   ctx.lineCap = "round";
   ctx.stroke();
+
+  ctx.save();
+  ctx.beginPath();
+  ctx.translate(momentumTip.x, momentumTip.y);
+  ctx.rotate(node.acceleration.angle + Math.PI / 2);
+  ctx.moveTo(0, 0);
+  ctx.lineTo(thickness / 2 + 5, 20);
+  ctx.lineTo(-(thickness / 2 + 5), 20);
+  ctx.closePath();
+  ctx.restore();
+  ctx.fillStyle = "purple";
+  ctx.fill();
 }

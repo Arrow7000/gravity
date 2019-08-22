@@ -54,7 +54,19 @@ const makeRandomVector = () => {
 
 function isOutOfView(v: Vector) {}
 
-let nodes = range(100, () => new Node(makeRandomVector()));
+let nodes: Node[] = [];
+
+function initialiseNodes() {
+  nodes = range(
+    750,
+    () =>
+      new Node(
+        makeRandomVector(),
+        2,
+        new Vector(randBetween(-2, 2), randBetween(-2, 2))
+      )
+  );
+}
 
 window.onresize = sizeCanvasToWindow;
 
@@ -135,9 +147,9 @@ function onFrame(counter: number) {
     }
   }, []);
 
-  const { newNode } = mouseState;
+  const { newNode, location } = mouseState;
   if (newNode) {
-    drawMomentumArrow(ctx, newNode);
+    drawMomentumArrow(ctx, newNode, location);
     drawCircle(ctx, newNode);
   }
 
@@ -167,4 +179,9 @@ function onFrame(counter: number) {
 }
 
 // Start it off
+initialiseNodes();
 onFrame(0);
+
+export function setNodes(newNodes: Node[]) {
+  nodes = newNodes;
+}
