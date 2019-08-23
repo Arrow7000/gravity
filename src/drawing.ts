@@ -1,8 +1,7 @@
 import { colour } from "./config";
 import { Node } from "./Node";
 import { Vector } from "./Vector";
-
-export type Ctx = CanvasRenderingContext2D;
+import { Ctx } from "./canvasHelpers";
 
 const getCanvasCenter = (ctx: Ctx) =>
   new Vector(ctx.canvas.width / 2, ctx.canvas.height / 2);

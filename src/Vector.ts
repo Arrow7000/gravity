@@ -12,6 +12,10 @@ export class Vector {
     return new Vector(x + p.x, y + p.y);
   }
 
+  public addLen(addend: number) {
+    return this.scaleTo(this.length + addend);
+  }
+
   public subtract(p: Vector) {
     const { x, y } = this;
     return new Vector(x - p.x, y - p.y);
@@ -72,6 +76,21 @@ export class Vector {
 
   public reverse() {
     return this.multiply(-1);
+  }
+
+  public get angle() {
+    const { x, y } = this;
+
+    return Math.atan2(y, x);
+  }
+
+  // Still needs to be tested
+  public rotate(degrees: number) {
+    const { x, y } = this;
+    return new Vector(
+      Math.cos(degrees * x) - Math.sin(degrees * y),
+      Math.sin(degrees * x) + Math.cos(degrees * y)
+    );
   }
 
   public isEqual(v: Vector) {

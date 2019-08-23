@@ -22,9 +22,10 @@ export function allCombinations<T, R>(
   return results;
 }
 
-export interface MouseState {
-  location: Vector;
-  isDown: boolean;
-  newNode: null | Node;
-  determiningMass: boolean; // whether we're currently determining mass or acceleration
-}
+export const range = <T>(length: number, mapper: (i: number) => T) =>
+  Array.from({ length }).map((_, i) => mapper(i));
+
+export const rand = (max: number) => Math.random() * max;
+
+export const randBetween = (min: number, max: number) =>
+  Math.random() * (max - min) + min;
