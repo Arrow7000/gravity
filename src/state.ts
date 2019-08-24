@@ -10,11 +10,12 @@ interface MouseState {
   determiningMass: boolean; // whether we're currently determining mass or acceleration
 }
 
-interface State {
+export interface State {
   nodes: Node[];
   mouseState: MouseState;
 }
 
+// state singleton
 export const state: State = {
   nodes: [],
   mouseState: {
@@ -30,18 +31,32 @@ export function setNodes(newNodes: Node[]) {
 }
 
 export function initialiseNodes() {
-  state.nodes = range(
-    750,
-    () =>
-      new Node(
-        makeRandomVector(),
-        2,
-        new Vector(randBetween(-2, 2), randBetween(-2, 2))
-      )
+  setNodes(
+    range(
+      750,
+      () =>
+        new Node(
+          makeRandomVector(),
+          2,
+          new Vector(randBetween(-2, 2), randBetween(-2, 2))
+        )
+    )
   );
 }
 
 export function mouseDownHandler(e: MouseEvent) {
+  state.mouseState.location = new Vector(e.clientX, e.clientY);
+  state.mouseState.isDown = true;
+
+  state.mouseState.determiningMass = true;
+  state.mouseState.newNode = new Node(
+    state.mouseState.location,
+    2,
+    Vector.origin.add(new Vector(0.01, 0.01))
+  );
+}
+
+export function mouseMoveHandler(e: MouseEvent) {
   state.mouseState.location = new Vector(e.clientX, e.clientY);
 
   if (state.mouseState.newNode) {

@@ -1,4 +1,4 @@
-import { Vector, Rectangle, getRectanglePosition, Pos } from "./Vector";
+import { Vector, Rectangle, Pos } from "./Vector";
 import { randBetween } from "./helpers";
 
 export type Ctx = CanvasRenderingContext2D;
@@ -11,6 +11,9 @@ ctx.imageSmoothingEnabled = true;
 
 export const getCanvasEnd = () =>
   new Vector(ctx.canvas.width, ctx.canvas.height);
+
+export const getCanvasCentre = () =>
+  new Vector(ctx.canvas.width / 2, ctx.canvas.height / 2);
 
 export function sizeCanvasToWindow() {
   const width = window.innerWidth;

@@ -12,6 +12,16 @@ export class Vector {
     return new Vector(x + p.x, y + p.y);
   }
 
+  public addX(n: number) {
+    const { x, y } = this;
+    return new Vector(x + n, y);
+  }
+
+  public addY(n: number) {
+    const { x, y } = this;
+    return new Vector(x, y + n);
+  }
+
   public addLen(addend: number) {
     return this.scaleTo(this.length + addend);
   }
