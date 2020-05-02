@@ -1,6 +1,6 @@
 import { Vector, Rectangle, getRectanglePosition, Pos } from "./Vector";
 
-const wiggle = 100;
+const wiggle = 50;
 const wiggleRoom = () => Math.random() * wiggle - wiggle / 2;
 
 export class Node {
@@ -27,7 +27,7 @@ export class Node {
   }
 
   get isBlackHole() {
-    return this.mass > 100000;
+    return this.mass >= 100000;
   }
 
   get radius() {

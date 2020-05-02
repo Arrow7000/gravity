@@ -1,4 +1,4 @@
-const { sqrt } = Math;
+const { sqrt, sin, cos } = Math;
 
 type V = Vector;
 
@@ -95,11 +95,11 @@ export class Vector {
   }
 
   // Still needs to be tested
-  public rotate(degrees: number) {
+  public rotateDeg(degrees: number) {
     const { x, y } = this;
     return new Vector(
-      Math.cos(degrees * x) - Math.sin(degrees * y),
-      Math.sin(degrees * x) + Math.cos(degrees * y)
+      cos(degrees * x) - sin(degrees * y),
+      sin(degrees * x) + cos(degrees * y)
     );
   }
 

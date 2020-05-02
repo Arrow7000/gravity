@@ -1,5 +1,10 @@
 import { State, setNodes } from "./state";
 import { Node } from "./Node";
+import { createLots } from "./nodeHelpers";
+
+export function initialiseNodes() {
+  setNodes(createLots(750));
+}
 
 export function setCrashedNodes(state: State) {
   return state.nodes.reduce((combinedNodes: Node[], node: Node) => {

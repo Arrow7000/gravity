@@ -7,14 +7,14 @@ import { getAttraction } from "./gravityForce";
 import { sizeCanvasToWindow, canvas, ctx } from "./canvasHelpers";
 import {
   state,
-  initialiseNodes,
   mouseMoveHandler,
   mouseUpHandler,
   mouseDownHandler,
-  setNodes
+  setNodes,
+  onFrameHandler,
 } from "./state";
-import { setCrashedNodes } from "./stateActions";
-import { Sidebar } from "./components/App";
+import { initialiseNodes, setCrashedNodes } from "./stateActions";
+import { Sidebar } from "./components/Sidebar";
 
 window.onresize = sizeCanvasToWindow;
 canvas.addEventListener("mousedown", mouseDownHandler);
@@ -39,25 +39,13 @@ function onFrame(counter: number) {
 
   setNodes(setCrashedNodes(state));
 
-  state.nodes.forEach(node => {
+  state.nodes.forEach((node) => {
     drawCircle(ctx, node);
     // drawLineFromCenterToNode(ctx, node);
-
     node.momentumMove();
   });
 
-  if (state.mouseState.isDown && newNode) {
-    if (state.mouseState.determiningMass) {
-      newNode.mass *= 1.05;
-    } else {
-      const oppositeVector = newNode.position
-        .to(state.mouseState.location)
-        .multiply(-1)
-        .multiply(newNode.mass / 30);
-
-      newNode.acceleration = oppositeVector;
-    }
-  }
+  onFrameHandler();
 
   requestAnimationFrame(() => onFrame(counter + 1));
 }

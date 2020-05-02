@@ -1,6 +1,4 @@
 import { Node } from "./Node";
-import { range, randBetween } from "./helpers";
-import { makeRandomVector } from "./canvasHelpers";
 import { Vector } from "./Vector";
 
 interface MouseState {
@@ -25,23 +23,13 @@ export const state: State = {
     determiningMass: true // first mass then acceleration
   }
 };
-
-export function setNodes(newNodes: Node[]) {
-  state.nodes = newNodes;
-}
-
-export function initialiseNodes() {
-  setNodes(
-    range(
-      750,
-      () =>
-        new Node(
-          makeRandomVector(),
-          2,
-          new Vector(randBetween(-2, 2), randBetween(-2, 2))
-        )
-    )
-  );
+type Setter<T> = (currNodes: T[]) => T[];
+export function setNodes(newNodesOrSetter: Node[] | Setter<Node>) {
+  if (typeof newNodesOrSetter === "function") {
+    state.nodes = newNodesOrSetter(state.nodes);
+  } else {
+    state.nodes = newNodesOrSetter;
+  }
 }
 
 export function mouseDownHandler(e: MouseEvent) {
@@ -74,4 +62,21 @@ export function mouseUpHandler(e: MouseEvent) {
   if (newNode) state.nodes.push(newNode);
 
   state.mouseState.newNode = null;
+}
+
+export function onFrameHandler() {
+  const { newNode } = state.mouseState;
+
+  if (state.mouseState.isDown && newNode) {
+    if (state.mouseState.determiningMass) {
+      newNode.mass *= 1.05;
+    } else {
+      const oppositeVector = newNode.position
+        .to(state.mouseState.location)
+        .multiply(-1)
+        .multiply(newNode.mass / 30);
+
+      newNode.acceleration = oppositeVector;
+    }
+  }
 }
