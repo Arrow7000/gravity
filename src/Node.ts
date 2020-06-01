@@ -4,15 +4,11 @@ const wiggle = 50;
 const wiggleRoom = () => Math.random() * wiggle - wiggle / 2;
 
 export class Node {
-  public acceleration: Vector;
-  public mass: number;
-
-  constructor(public position: Vector, mass?: number, acceleration?: Vector) {
-    this.mass = mass ? mass : Math.random() * 100; // randomly assigned
-    this.acceleration = acceleration
-      ? acceleration
-      : new Vector(wiggleRoom(), wiggleRoom());
-  }
+  constructor(
+    public position: Vector,
+    public mass = Math.random() * 100,
+    public acceleration = new Vector(wiggleRoom(), wiggleRoom())
+  ) {}
 
   accelerate(force: Vector) {
     this.acceleration = this.acceleration.add(force);

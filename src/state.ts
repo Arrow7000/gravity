@@ -20,15 +20,32 @@ export const state: State = {
     location: Vector.origin,
     isDown: false,
     newNode: null,
-    determiningMass: true // first mass then acceleration
-  }
+    determiningMass: true, // first mass then acceleration
+  },
 };
-type Setter<T> = (currNodes: T[]) => T[];
-export function setNodes(newNodesOrSetter: Node[] | Setter<Node>) {
+
+type NodesSetter<T> = (currNodes: T[]) => T[];
+
+type GenericSetter<T> = (thing: T) => T;
+
+export function setNodes(newNodesOrSetter: Node[] | NodesSetter<Node>) {
   if (typeof newNodesOrSetter === "function") {
     state.nodes = newNodesOrSetter(state.nodes);
   } else {
     state.nodes = newNodesOrSetter;
+  }
+}
+
+export function setState(newStateOrSetter: State | GenericSetter<State>) {
+  if (typeof newStateOrSetter === "function") {
+    const newState = newStateOrSetter(state);
+
+    // @TODO: set all state fields automatically
+    state.mouseState = newState.mouseState;
+    state.nodes = newState.nodes;
+  } else {
+    state.mouseState = newStateOrSetter.mouseState;
+    state.nodes = newStateOrSetter.nodes;
   }
 }
 

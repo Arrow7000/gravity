@@ -37,9 +37,20 @@ export function drawLineFromCenterToNode(ctx: Ctx, node: Node) {
   ctx.stroke();
 }
 
+export function drawAccelLine(ctx: Ctx, node: Node) {
+  const { x, y } = node.position;
+  const momentumDest = node.position.add(node.acceleration);
+
+  ctx.beginPath();
+  ctx.moveTo(x, y);
+  ctx.lineTo(momentumDest.x, momentumDest.y);
+  ctx.strokeStyle = "red";
+  ctx.lineWidth = Math.log(node.mass);
+  ctx.stroke();
+}
+
 export function drawMomentumArrow(ctx: Ctx, node: Node, mouseLocation: Vector) {
   const { x, y } = node.position;
-  // const center = getCanvasCenter(ctx);
   ctx.beginPath();
   ctx.moveTo(x, y);
 

@@ -1,8 +1,3 @@
-import { Vector } from "./Vector";
-import { Node } from "./Node";
-
-export const notNull = <T>(t: T | null | undefined): t is T => !!t;
-
 export function allCombinations<T, R>(
   items: T[],
   mapper: (a: T, b: T) => R

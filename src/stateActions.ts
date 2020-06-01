@@ -1,13 +1,13 @@
-import { State, setNodes } from "./state";
+import { setNodes } from "./state";
 import { Node } from "./Node";
-import { createLots } from "./nodeHelpers";
+import { createLotsOfNodes } from "./nodeHelpers";
 
 export function initialiseNodes() {
-  setNodes(createLots(750));
+  setNodes(createLotsOfNodes(750));
 }
 
-export function setCrashedNodes(state: State) {
-  return state.nodes.reduce((combinedNodes: Node[], node: Node) => {
+export function getCombinedNodes(nodes: Node[]) {
+  return nodes.reduce((combinedNodes: Node[], node: Node) => {
     const closeNodes = combinedNodes.filter(
       (thisNode: Node) =>
         node.position.to(thisNode.position).length <
@@ -35,7 +35,7 @@ export function setCrashedNodes(state: State) {
       );
 
       const withoutCombined = combinedNodes.filter(
-        thisNode => !closeNodes.includes(thisNode)
+        (thisNode) => !closeNodes.includes(thisNode)
       );
 
       return [...withoutCombined, combinedNode];

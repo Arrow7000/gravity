@@ -1,7 +1,7 @@
 import { Vector } from "./Vector";
 import { Node } from "./Node";
 
-const G = 1; // gravitational constant
+export const G = 1; // gravitational constant
 
 interface AttractionForces {
   a: Vector;
@@ -17,6 +17,6 @@ export function getAttraction(a: Node, b: Node): AttractionForces {
 
   return {
     a: aToBDirection.multiply(force),
-    b: bToADirection.multiply(force)
+    b: bToADirection.multiply(force),
   };
 }
